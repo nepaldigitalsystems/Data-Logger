@@ -4,5 +4,5 @@
 #include <cJSON.h>
 
 /* cJSON* time_from_net(); */
-char* client_setup();
+char* rtc_client_setup();
 #endif

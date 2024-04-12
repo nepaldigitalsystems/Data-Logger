@@ -1,4 +1,5 @@
 
+#include "freertos/projdefs.h"
 #include <cJSON.h>
 #include <esp_event.h>
 #include <esp_http_client.h>
@@ -34,7 +35,7 @@ esp_err_t client_event(esp_http_client_event_t *evt) {
   return ESP_OK;
 }
 
-char* client_setup(){
+char* rtc_client_setup(){
   chunk_payload_t chunk = {0};
   esp_http_client_config_t client_config = {.url = "http://worldtimeapi.org/api/timezone/Asia/Kathmandu",
     .method = HTTP_METHOD_GET,
@@ -47,7 +48,8 @@ char* client_setup(){
   esp_http_client_cleanup(client_handle);
 
   if (time_buffer == NULL) {
-    printf("null\n\n\n");
+    ESP_LOGE("RTC", "The value is NULL");
+    vTaskDelay(pdMS_TO_TICKS(1000));
     return(0);
   } else {
     cJSON *datetime =cJSON_GetObjectItemCaseSensitive(time_buffer, "datetime");
