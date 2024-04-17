@@ -1,4 +1,4 @@
-#include "protocol_examples_common.h"
+#include <connect.h>
 #include <cJSON.h>
 #include <esp_event.h>
 #include <esp_http_client.h>
@@ -10,6 +10,7 @@
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include "driver/i2c.h"
+#include "freertos/projdefs.h"
 #include <esp_err.h>
 #include <driver/gpio.h>
 
@@ -25,10 +26,8 @@
 #define CHP_ADDR1 0x68
 
 void wifi_init(){
-  nvs_flash_init();
-  esp_netif_init();
-  esp_event_loop_create_default();
-  example_connect();
+  connect_init();
+  connect_sta("nepaldigisys", "NDS_0ffice", 10000);
 }
 
 uint8_t char_to_hex(char pos_10, char pos_1){
@@ -85,10 +84,19 @@ void time_sync(){
   }
 }
 
+void free_space(){
+  while(1){
+    int DRam = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    ESP_LOGI("FREE", "DRAM \t\t %d", DRam);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
+}
+
 void app_main(void) {
   wifi_init();
   xTaskCreate(time_sync, "syncs the time", 4096, NULL, 2, NULL  );
-  mdns_service();
-  server_init();
+  xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
+  // mdns_service();
+  // server_init();
   // example_disconnect();
 }
