@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 50px;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+    <div id="time"></div>
+
+    <!-- <div id="date"></div> -->
+
+    <script>
+        const socket = new WebSocket('ws://192.168.1.90/ws'); // Change to your WebSocket server address
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established.');
+        };
+
+        socket.onmessage = (event) => {
+            const responseDiv = document.getElementById('time');
+            const message = JSON.parse(event.data);
+               console.log('Message received:', event.data); 
+            // const messageTime = jsonObject.time;
+            // responseDiv.innerHTML = `<p>${JSON.stringify(message)}</p>`;
+            responseDiv.innerHTML = `<p>time: ${message.time}</p>`;
+        };
+
+       // // Send messages every 1 second 
+       // setInterval(() => { 
+       //     const messageTime = { "data": "time" };
+       //
+       //     try { 
+       //         socket.send(JSON.stringify(messageTime)); 
+       //         console.log('Message sent:', messageTime); 
+       //     } catch (error) { 
+       //         console.error('Error sending message:', error);
+       //     } 
+       // }, 250);
+       
+        // Close WebSocket connection when the page is unloaded
+        window.onbeforeunload = () => {
+            socket.close();
+        };
+    </script>
+</body>
+</html>

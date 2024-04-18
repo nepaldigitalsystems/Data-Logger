@@ -77,11 +77,11 @@ void time_sync(){
 
         // printf("\nDATE: %2.2x/%2.2x/%2.2x \n",data[6], data[5], data[4]);
         // printf("TIME: %2.2x:%2.2x:%2.2x \n",data[2], data[1], data[0]);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(2000));
       }
     }else{
       ESP_LOGE("TIME", "INVALID TIME");
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
 

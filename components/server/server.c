@@ -1,5 +1,3 @@
-#include "freertos/projdefs.h"
-#include <cJSON.h>
 #include <esp_http_server.h>
 #include <esp_log.h>
 #include <mdns.h>
@@ -12,7 +10,7 @@
 static const char *TAG = "HTTPD SERVER";
 
 // reading the html file
-extern const char html[] asm("_binary_test_html_start");
+extern const char html[] asm("_binary_index_html_start");
 
 struct async_resp_arg {
   httpd_handle_t hd;
@@ -35,43 +33,6 @@ static esp_err_t ws_handler(httpd_req_t *req) {
     ESP_LOGI(TAG, "Handshake done, the new connection was opened");
     return ESP_OK;
   }
-  // char *response = malloc(100);
-  // httpd_ws_frame_t ws_recv= {
-  //   .type = HTTPD_WS_TYPE_TEXT,
-  //   .payload = malloc(1024),
-  // };
-  // httpd_ws_recv_frame(req, &ws_recv, 1024);
-  //
-  // cJSON *carrier = cJSON_Parse((char*)ws_recv.payload);
-  // if (carrier != NULL) {
-  //   cJSON *data = cJSON_GetObjectItemCaseSensitive(carrier, "data");
-  //   if(strcmp(data->valuestring,"date")==0){
-  //     snprintf(response, 20, "\{\"date\":\"%02x%02x%02x\"}", time_data[5], time_data[4], time_data[3]);
-  //   }else if(strcmp(data->valuestring,"time")==0){
-  //     snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
-  //   }else{
-  //     ESP_LOGE("WEBSOCKET","No such request found");
-  //     response  = "request not found ['_']";
-  //   }
-  // }else {
-  //   response  = "invalid request [-_-]\n";
-  // }
-  // httpd_ws_frame_t ws_response = {
-  //   .final = true,
-  //   // .fragmented = false,
-  //   .type = HTTPD_WS_TYPE_TEXT,
-  //   .payload = (uint8_t *)response,
-  //   .len = strlen(response),
-  // };
-  //
-  // esp_err_t ws_send =  httpd_ws_send_frame(req, &ws_response);
-  // if(ws_send!=ESP_OK){
-  //   ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d", ws_send);
-  // }
-  // cJSON_Delete(carrier);
-  // free(response);
-  // free(ws_recv.payload);
-  // return ws_send;
   return ESP_OK;
 }
 
@@ -102,27 +63,12 @@ static void send_time(void *arg)
   httpd_handle_t hd = resp_arg->hd;
   int fd = resp_arg->fd;
   char response[100];
-  char *time= "{\"data\":\"time\"}" ;
-  cJSON *carrier = cJSON_Parse(time);
-  if (carrier != NULL) {
-    cJSON *data = cJSON_GetObjectItemCaseSensitive(carrier, "data");
-    if(strcmp(data->valuestring,"date")==0){
-      snprintf(response, 20, "\{\"date\":\"%02x%02x%02x\"}", time_data[5], time_data[4], time_data[3]);
-    }else if(strcmp(data->valuestring,"time")==0){
-      snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
-    }else{
-      ESP_LOGE("WEBSOCKET","No such request found");
-      snprintf(response, 30, "%s","request not found ['_']");
-    }
-  }else {
-    snprintf(response, 30,"%s" ,"request found ['_']");
-  }
-    httpd_ws_frame_t ws_pkt;
-    memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-    ws_pkt.payload = (uint8_t*)response;
-    ws_pkt.len = strlen(response);
-    ws_pkt.type = HTTPD_WS_TYPE_TEXT;
-  cJSON_Delete(carrier);
+  snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
+  httpd_ws_frame_t ws_pkt;
+  memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
+  ws_pkt.payload = (uint8_t*)response;
+  ws_pkt.len = strlen(response);
+  ws_pkt.type = HTTPD_WS_TYPE_TEXT;
   httpd_ws_send_frame_async(hd, fd, &ws_pkt);
   free(resp_arg);
 }
@@ -134,7 +80,7 @@ static void ws_server_send_messages(httpd_handle_t* server)
 
   // Send async message to all connected clients that use websocket protocol every 10 seconds
   while (send_messages) {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(5000));
 
     if (!*server) { // httpd might not have been created by now
       continue;
