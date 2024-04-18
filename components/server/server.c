@@ -14,7 +14,7 @@ static const char *TAG = "HTTPD SERVER";
 // reading the html file
 extern const char html[] asm("_binary_test_html_start");
 
-// uint count =0;
+uint count =0;
 
 // setup for the home page
 esp_err_t uri_home(httpd_req_t *req) {
@@ -37,24 +37,22 @@ static esp_err_t ws_handler(httpd_req_t *req) {
   };
   httpd_ws_recv_frame(req, &ws_recv, 1024);
 
-  // cJSON *carrier = cJSON_Parse((char*)ws_recv.payload);
-  // if (carrier != NULL) {
-  //   cJSON *data = cJSON_GetObjectItemCaseSensitive(carrier, "data");
-  //   if(strcmp(data->valuestring,"date")==0){
-  //     // ESP_LOGI("WEBSOCKET", "Sending date %d", count);
-  //     snprintf(response, 20, "\{\"date\":\"%02x%02x%02x\"}", time_data[5], time_data[4], time_data[3]);
-  //   }else if(strcmp(data->valuestring,"time")==0){
-  //     // ESP_LOGI("WEBSOCKET", "Sending time %d", count);
-  //     snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
-  //   }else{
-  //     ESP_LOGE("WEBSOCKET","No such request found");
-  //     response  = "request not found ['_']";
-  //   }
-  // }else {
-  //   response  = "invalid request [-_-]\n";
-  // }
-
-  response  = "invalid request [-_-]\n";
+  cJSON *carrier = cJSON_Parse((char*)ws_recv.payload);
+  if (carrier != NULL) {
+    cJSON *data = cJSON_GetObjectItemCaseSensitive(carrier, "data");
+    if(strcmp(data->valuestring,"date")==0){
+      ESP_LOGI("WEBSOCKET", "Sending date %d", count);
+      snprintf(response, 20, "\{\"date\":\"%02x%02x%02x\"}", time_data[5], time_data[4], time_data[3]);
+    }else if(strcmp(data->valuestring,"time")==0){
+      ESP_LOGI("WEBSOCKET", "Sending time %d", count);
+      snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
+    }else{
+      ESP_LOGE("WEBSOCKET","No such request found");
+      response  = "request not found ['_']";
+    }
+  }else {
+    response  = "invalid request [-_-]\n";
+  }
   httpd_ws_frame_t ws_response = {
     .final = true,
     // .fragmented = false,
@@ -67,15 +65,12 @@ static esp_err_t ws_handler(httpd_req_t *req) {
   if(ws_send!=ESP_OK){
     ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d", ws_send);
   }
-  // count++;
-  // cJSON_Delete(carrier);
-  // free(response);
+  count++;
+  cJSON_Delete(carrier);
+  free(response);
   free(ws_recv.payload);
-  // free(ws_response.payload);
   return ws_send;
 }
-
-
 
 // setup for the server
 void server_init() {
