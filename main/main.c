@@ -95,10 +95,9 @@ void free_space(){
 
 void app_main(void) {
   wifi_init();
-  vTaskDelay(pdMS_TO_TICKS(3000));
+  vTaskDelay(pdMS_TO_TICKS(4000));
   xTaskCreate(time_sync, "syncs the time", 4096, NULL, 2, NULL  );
   xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
   // mdns_service();
   server_init();
-  // example_disconnect();
 }
