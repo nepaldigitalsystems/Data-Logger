@@ -63,7 +63,7 @@ static void send_time(void *arg)
   httpd_handle_t hd = resp_arg->hd;
   int fd = resp_arg->fd;
   char response[100];
-  snprintf(response, 20, "\{\"time\":\"%02x%02x%02x\"}", time_data[2], time_data[1], time_data[0]);
+  snprintf(response, 20, "\{\"time\":\"%02x %02x %02x\"}", time_data[2], time_data[1], time_data[0]);
   httpd_ws_frame_t ws_pkt;
   memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
   ws_pkt.payload = (uint8_t*)response;

@@ -1,59 +1,84 @@
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Client</title>
+<html>
+  <head>
+    <title>ESP IOT DASHBOARD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
-        body {
-            text-align: center;
-            margin-top: 50px;
-        }
-        textarea {
-            width: 80%;
-            height: 100px;
-            margin-bottom: 20px;
-        }
+    html {
+    font-family: Arial, Helvetica, sans-serif;
+    display: inline-block;
+    text-align: center;
+    background-color: #000000;
+    }
+    h1 {
+    font-size: 1.8rem;
+    color: #606060;
+    }
+    .topnav {
+    overflow: hidden;
+    background-color: #000000;
+    }
+    body {
+    margin: 0;
+    }
+    .content {
+    padding: 50px;
+    }
+    .card-grid {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .card {
+    background-color: #000000;
+    /* box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5); */
+       border: 2px solid #777777;
+    }
+    .card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #888888
+    }
+    .reading {
+    font-size: 1.2rem;
+    color: #b0b0b0;
+    }
     </style>
-</head>
-<body>
-    <h1>WebSocket Client</h1>
-    <div id="time"></div>
-
-    <!-- <div id="date"></div> -->
-
+  </head>
+  <body>
+    <div class="topnav">
+      <h1>SENSOR READINGS (WEBSOCKET)</h1>
+    </div>
+    <div class="content">
+      <div class="card-grid">
+        <div class="card">
+          <p class="card-title"> Time</p>
+          <p class="reading"><span id="time">loading</span></p>
+        </div>
+      </div>
+    </div>
     <script>
-        const socket = new WebSocket('ws://192.168.1.90/ws'); // Change to your WebSocket server address
+    const socket = new WebSocket('ws://192.168.1.90/ws'); // Change to your WebSocket server address
 
-        socket.onopen = () => {
-            console.log('WebSocket connection established.');
-        };
+    socket.onopen = () => {
+      console.log('WebSocket connection established.');
+    };
 
-        socket.onmessage = (event) => {
-            const responseDiv = document.getElementById('time');
-            const message = JSON.parse(event.data);
-               console.log('Message received:', event.data); 
-            // const messageTime = jsonObject.time;
-            // responseDiv.innerHTML = `<p>${JSON.stringify(message)}</p>`;
-            responseDiv.innerHTML = `<p>time: ${message.time}</p>`;
-        };
+    socket.onmessage = (event) => {
+      const responseDiv = document.getElementById('time');
+      const message = JSON.parse(event.data);
+      console.log('Message received:', event.data); 
+      responseDiv.innerHTML = `<p>${message.time}</p>`;
+    };
 
-       // // Send messages every 1 second 
-       // setInterval(() => { 
-       //     const messageTime = { "data": "time" };
-       //
-       //     try { 
-       //         socket.send(JSON.stringify(messageTime)); 
-       //         console.log('Message sent:', messageTime); 
-       //     } catch (error) { 
-       //         console.error('Error sending message:', error);
-       //     } 
-       // }, 250);
-       
-        // Close WebSocket connection when the page is unloaded
-        window.onbeforeunload = () => {
-            socket.close();
-        };
+    window.onbeforeunload = () => {
+      socket.close();
+    };
     </script>
-</body>
+  </body>
 </html>
