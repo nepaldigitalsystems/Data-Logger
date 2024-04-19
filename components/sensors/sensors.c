@@ -83,6 +83,11 @@ void time_sync(){
   }
 }
 
+void tinyRTC_init(){
+  xTaskCreate(time_sync, "RTC", 2048, NULL, 2, NULL);
+  
+}
+
 
 
 // -----------------------------[ DHT22 ]--------------------------------- //
@@ -299,6 +304,73 @@ char* get_gyro(){
 
 void mpu6050_init(){
   xTaskCreate(mpu6050_conf, "MPU6050", 2048, NULL, 2, NULL);
+}
+
+
+//-----------------------------[ tsl2561 ]--------------------------------- //
+
+#define TSL2561 0x39
+#define MAX_COUNT 2
+
+float lux=0;
+
+float digital_to_lux(float ch0, float ch1){
+  float value =  ch1/ch0;
+  if( 0 < value && value <= .52){
+    return(0.0315 * ch0 - 0.0593 * ch0 * pow(value, 1.4));
+  }else if( 0.52 < value && value <= .65){
+    return(0.0229 * ch0 - 0.0291 * ch1);
+  }else if( 0.65 < value && value <= .80){
+    return(0.0157 * ch0 - 0.018 * ch1);
+  }else if( 0.80 < value && value <= 1.3){
+    return(0.00338 * ch0 -0.0026 * ch1);
+  }else if( 1.3 < value){
+    return 0;
+  }else{
+    return -1;
+  };
+}
+
+void tsl2561_conf(){
+  uint8_t data0[MAX_COUNT]={};
+  uint8_t data1[MAX_COUNT]={};
+  uint16_t ch0=0;
+  uint16_t ch1=0;
+
+  // esp_error_check_without_abort(i2c_init(chp_sda0, chp_scl0, master_port0));
+  i2c_init(CHP_SDA1, CHP_SCL1, MASTER_PORT1);
+
+  // i2c_write(chp_addr0, master_port0, chp_config0, config_value0);
+  i2c_write(TSL2561, MASTER_PORT1, 0x80, 0x03);
+  i2c_write(TSL2561, MASTER_PORT1, 0x81, 0x11);
+
+  while(1){
+    i2c_read(TSL2561, MASTER_PORT1, 0x8c, data0);
+    i2c_read(TSL2561, MASTER_PORT1, 0x8e, data1);
+
+    ch0 = (data0[1]<<7) + data0[0];
+    ch1 = (data1[1]<<7) + data1[0];
+
+    // printf("%8d", ch0);
+    // printf("%8d", ch1);
+
+    if(digital_to_lux >= 0){
+      // printf("\nlux: %6.2f\n\n", digital_to_lux(ch0, ch1));
+      lux=digital_to_lux(ch0, ch1);
+    }else{
+      printf("an error has occured");
+      ESP_LOGE("tsl2561", "an error has occured");
+    }
+    vTaskDelay(pdMS_TO_TICKS(4000));
+  }
+}
+
+void tsl2561_init(){
+  xTaskCreate(tsl2561_conf, "tsl2561_conf", 2048, NULL, 2, NULL);
+}
+
+float get_lux(){
+  return lux;
 }
 
 

@@ -65,8 +65,8 @@ static void send_time(void *arg)
   int fd = resp_arg->fd;
   char response[150];
   snprintf(response, 150, 
-           "\{\"time\":\"%02x %02x %02x\",\"humidity\":\"%4.2f\",\"temperature\":\"%4.2f\", \"accel\":\"%s\", \"gyro\":\"%s\"}", 
-           time_data[2], time_data[1], time_data[0],get_humidity(),get_temperature(),get_accel(), get_gyro());
+           "\{\"time\":\"%02x | %02x | %02x\",\"humidity\":\"%02.2f\",\"temperature\":\"%02.2f\", \"accel\":\"%s\", \"gyro\":\"%s\", \"lux\":\"%03.2f\"}", 
+           time_data[2], time_data[1], time_data[0],get_humidity(),get_temperature(),get_accel(), get_gyro(), get_lux());
   httpd_ws_frame_t ws_pkt;
   memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
   ws_pkt.payload = (uint8_t*)response;

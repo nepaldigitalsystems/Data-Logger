@@ -57,7 +57,7 @@
       <div class="card-grid">
         <div class="card">
           <p class="card-title"> Time</p>
-          <p class="reading"><span id="time">__ __ __</span></p>
+          <p class="reading"><span id="time">__ | __ | __</span></p>
         </div>
         <div class="card">
           <p class="card-title"> Temperature</p>
@@ -74,6 +74,10 @@
         <div class="card">
           <p class="card-title"> Gyro</p>
           <p class="reading"><span id="gyro">___ | ___ | ___</span></p>
+        </div>
+        <div class="card">
+          <p class="card-title"> Lux</p>
+          <p class="reading"><span id="lux">___.__</span></p>
         </div>
       </div>
     </div>
@@ -103,6 +107,9 @@
 
       const gyroID = document.getElementById('gyro');
       gyroID.innerHTML = `<p>${recv.gyro}</p>`;
+
+      const luxID = document.getElementById('lux');
+      luxID.innerHTML = `<p>${recv.lux}</p>`;
     };
 
     window.onbeforeunload = () => {

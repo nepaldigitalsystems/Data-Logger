@@ -25,11 +25,15 @@ void free_space(){
 
 void app_main(void) {
   wifi_init();
-  vTaskDelay(pdMS_TO_TICKS(4000));
-  xTaskCreate(time_sync, "syncs the time", 4096, NULL, 2, NULL  );
-  xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
+  vTaskDelay(pdMS_TO_TICKS(2000));
+  
   dht_init();
+  tsl2561_init();
   mpu6050_init();
-  server_init();
+  tinyRTC_init();
+
+  xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
+
   mdns_service();
+  server_init();
 }
