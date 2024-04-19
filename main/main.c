@@ -27,11 +27,14 @@ void app_main(void) {
   wifi_init();
   vTaskDelay(pdMS_TO_TICKS(2000));
   
-  dht_init();
   tsl2561_init();
+  vTaskDelay(pdMS_TO_TICKS(100));
   mpu6050_init();
+  vTaskDelay(pdMS_TO_TICKS(100));
   tinyRTC_init();
+  vTaskDelay(pdMS_TO_TICKS(100));
 
+  dht_init();
   xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
 
   mdns_service();
