@@ -38,15 +38,18 @@ void time_sync(){
   uint8_t sec=0;
   uint8_t min=0;
   uint8_t hr=0;
+  uint8_t day=0;
   uint8_t date=0;
   uint8_t month=0;
   uint8_t year=0;
 
-  char* time={};
+  char time[20]={};
 
   while(1){
-    if(rtc_client_setup()!=0){
-      time = rtc_client_setup();
+    char* rtc_time = rtc_client_setup();
+    if(rtc_time!=0){
+      // time = rtc_client_setup();
+      snprintf(time, sizeof(time),"%s", rtc_time);
       break;
     }else{
       ESP_LOGE("TIME", "INVALID TIME");
@@ -57,6 +60,7 @@ void time_sync(){
   hr= char_to_hex(time[11], time[12]);
   min= char_to_hex(time[14], time[15]);
   sec= char_to_hex(time[17], time[18]);
+  day= char_to_hex(0, time[10]);
   date= char_to_hex(time[8], time[9]);
   month= char_to_hex(time[5], time[6]);
   year= char_to_hex(time[2], time[3]);
@@ -68,20 +72,16 @@ void time_sync(){
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x00, sec);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x01, min);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x02, hr);
+  i2c_write(RTC_ADDR, MASTER_PORT1, 0x03, day);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x04, date);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x05, month);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x06, year);
 
   while(1){
     i2c_read(RTC_ADDR, MASTER_PORT1, 0x00, data);
-
-    time_data[0]= data[0]; //sec
-    time_data[1]= data[1]; //min
-    time_data[2]= data[2]; //hr
-    time_data[3]= data[4]; //date
-    time_data[4]= data[5]; //month
-    time_data[5]= data[6]; //year
-
+    for(int i=0; i<7 ; i++){
+      time_data[i]= data[i]; 
+      }
     // printf("\nDATE: %2.2x/%2.2x/%2.2x \n",data[6], data[5], data[4]);
     // printf("TIME: %2.2x:%2.2x:%2.2x \n",data[2], data[1], data[0]);
     vTaskDelay(pdMS_TO_TICKS(2000));
@@ -89,11 +89,8 @@ void time_sync(){
 }
 
 void tinyRTC_init(){
-  xTaskCreate(time_sync, "RTC", 2048, NULL, 2, NULL);
-
+  xTaskCreate(time_sync, "RTC", 4000, NULL, 2, NULL);
 }
-
-
 
 // -----------------------------[ DHT22 ]--------------------------------- //
 #define DHT_TIMEOUT_ERROR -2
@@ -125,7 +122,6 @@ int process_signal();
 
 float get_humidity(){ return humidity; }
 float get_temperature(){ return temperature; }
-
 
 static IRAM_ATTR void pos_intr(){
   pos_time[pos_count]=  esp_timer_get_time();
@@ -192,18 +188,14 @@ int process_signal(){
     for(int j=0 ; j<8 ; j++){
       int k=(i*8)+j;
       int l=7-(k%8);
-
       if(dht_data[k+1]) data[i]|=(1<<l);
     }
   }
 
   uint8_t checksum = (data[0]+data[1]+data[2]+data[3])& 0xFF;
-
   humidity = ((data[0]*0x100)+data[1])/10.0;
   temperature = ((data[2]*0x100)+data[3])/10.0;
-
   if(checksum!=data[4]) return DHT_CHECKSUM_ERROR;
-
   return ESP_OK;
 }
 
@@ -245,8 +237,6 @@ void dht_init()
   xTaskCreatePinnedToCore(startSignal, "Start Signal", 2048, NULL, 4, NULL, 1);
   xTaskCreate(dht_output, "output value", 2048, NULL, 2, &signal_handler);
 }
-
-
 
 // -----------------------------[ MPU6050 ]--------------------------------- //
 

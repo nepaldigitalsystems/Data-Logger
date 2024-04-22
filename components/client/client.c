@@ -14,6 +14,7 @@ static int buffer_index=0;
 cJSON* time_buffer;
 
 #define TAG "http"
+      char rtc_time[20];
 
 // for getting the data from HTTPS
 esp_err_t client_event(esp_http_client_event_t *evt) {
@@ -52,7 +53,7 @@ esp_err_t client_event(esp_http_client_event_t *evt) {
 
 char* rtc_client_setup(){
   esp_http_client_config_t client_config = {
-    .url = "http://worldtimeapi.org/api/timezone/Asia/Kathmandu",
+    .url = "http://worldtimeapi.org/api/timezone/asia/kathmandu",
     .method = HTTP_METHOD_GET,
     .event_handler = client_event,
   };
@@ -68,10 +69,11 @@ char* rtc_client_setup(){
     cJSON *datetime =cJSON_GetObjectItem(time_buffer, "datetime");
     if(datetime && cJSON_IsString(datetime)){
       ESP_LOGI("TIME"," %s\n\n", datetime->valuestring);
+      snprintf(rtc_time, 20, "%s",datetime->valuestring);
       if(time_buffer){
         cJSON_Delete(time_buffer);
       }
-      return(datetime->valuestring);
+      return(rtc_time);
     }
     return 0;
   }

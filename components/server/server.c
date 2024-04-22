@@ -63,10 +63,10 @@ static void send_time(void *arg)
   struct async_resp_arg *resp_arg = arg;
   httpd_handle_t hd = resp_arg->hd;
   int fd = resp_arg->fd;
-  char response[150];
-  snprintf(response, 150, 
-           "\{\"time\":\"%02x | %02x | %02x\",\"humidity\":\"%02.2f\",\"temperature\":\"%02.2f\", \"accel\":\"%s\", \"gyro\":\"%s\", \"lux\":\"%03.2f\"}", 
-           time_data[2], time_data[1], time_data[0],get_humidity(),get_temperature(),get_accel(), get_gyro(), get_lux());
+  char response[200];
+  snprintf(response, 200, 
+           "\{\"time\":\"%02x | %02x | %02x\",\"date\":\"%02x | %02x | %02x\",\"day\":\"%02x\",\"humidity\":\"%02.2f\",\"temperature\":\"%02.2f\", \"accel\":\"%s\", \"gyro\":\"%s\", \"lux\":\"%03.2f\"}", 
+           time_data[2], time_data[1], time_data[0],time_data[6], time_data[5], time_data[4],time_data[3],get_humidity(),get_temperature(),get_accel(), get_gyro(), get_lux());
   httpd_ws_frame_t ws_pkt;
   memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
   ws_pkt.payload = (uint8_t*)response;

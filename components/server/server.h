@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-extern uint8_t time_data[6];
+extern uint8_t time_data[7];
 void mdns_service();
 void server_init();
 #endif
