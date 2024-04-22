@@ -8,6 +8,7 @@
 #include <server.h>
 #include <sensors.h>
 #include <connect.h>
+#include <mqtt.h>
 
 void wifi_init(){
   connect_init();
@@ -35,6 +36,7 @@ void app_main(void) {
   vTaskDelay(pdMS_TO_TICKS(100));
 
   dht_init();
+  mqtt_init();
   xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
 
   mdns_service();
