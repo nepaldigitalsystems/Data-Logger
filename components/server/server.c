@@ -58,7 +58,7 @@ void server_init() {
   ws_server_send_messages(&httpd_handler);
 }
 
-static void send_time(void *arg)
+static void send_data(void *arg)
 {
   struct async_resp_arg *resp_arg = arg;
   httpd_handle_t hd = resp_arg->hd;
@@ -99,7 +99,7 @@ static void ws_server_send_messages(httpd_handle_t* server)
           struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
           resp_arg->hd = *server;
           resp_arg->fd = sock;
-          if (httpd_queue_work(resp_arg->hd, send_time, resp_arg) != ESP_OK) {
+          if (httpd_queue_work(resp_arg->hd, send_data, resp_arg) != ESP_OK) {
             ESP_LOGE(TAG, "httpd_queue_work failed!");
             send_messages = false;
             break;

@@ -59,10 +59,10 @@
           <p class="card-title"> Date</p>
           <p class="reading"><span id="date">__ | __ | __</span></p>
         </div>
-        <div class="card">
-          <p class="card-title"> Day</p>
-          <p class="reading"><span id="day">_</span></p>
-        </div>
+        <!-- <div class="card"> -->
+        <!--   <p class="card-title"> Day</p> -->
+        <!--   <p class="reading"><span id="day">_</span></p> -->
+        <!-- </div> -->
         <div class="card">
           <p class="card-title"> Time</p>
           <p class="reading"><span id="time">__ | __ | __</span></p>
@@ -107,8 +107,8 @@
       const dateID = document.getElementById('date');
       dateID.innerHTML = `<p>${recv.date}</p>`;
 
-      const dayID = document.getElementById('day');
-      dayID.innerHTML = `<p>${recv.day}</p>`;
+      // const dayID = document.getElementById('day');
+      // dayID.innerHTML = `<p>${recv.day}</p>`;
 
       const temperatureID = document.getElementById('temperature');
       temperatureID.innerHTML = `<p>${recv.temperature}&deg;C</p>`;

@@ -38,7 +38,7 @@ void time_sync(){
   uint8_t sec=0;
   uint8_t min=0;
   uint8_t hr=0;
-  uint8_t day=0;
+  // uint8_t day=0;
   uint8_t date=0;
   uint8_t month=0;
   uint8_t year=0;
@@ -60,7 +60,7 @@ void time_sync(){
   hr= char_to_hex(time[11], time[12]);
   min= char_to_hex(time[14], time[15]);
   sec= char_to_hex(time[17], time[18]);
-  day= char_to_hex(0, time[10]);
+  // day= char_to_hex(0, time[10]);
   date= char_to_hex(time[8], time[9]);
   month= char_to_hex(time[5], time[6]);
   year= char_to_hex(time[2], time[3]);
@@ -72,7 +72,7 @@ void time_sync(){
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x00, sec);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x01, min);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x02, hr);
-  i2c_write(RTC_ADDR, MASTER_PORT1, 0x03, day);
+  // i2c_write(RTC_ADDR, MASTER_PORT1, 0x03, day);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x04, date);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x05, month);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x06, year);

@@ -13,6 +13,9 @@
 
 static const char* TAG_M = "MQTT_EVENT";
 
+// Function prototypes
+static void mqtt_command(esp_mqtt_event_handle_t event);
+
 static void mqtt_event_handler(void *event_handler_arg, esp_event_base_t event_base,
                                int32_t event_id, void *event_data)
 {
@@ -42,10 +45,7 @@ static void mqtt_event_handler(void *event_handler_arg, esp_event_base_t event_b
       ESP_LOGI(TAG_M, "MQTT_EVENT_DATA");
       printf("%.*s: ", event->topic_len, event->topic);
       printf("%.*s\n", event->data_len, event->data);
-      if(strcmp(event->data, "reset")){
-        printf("reseting now");
-        esp_restart();
-      }
+      mqtt_command(event);
 
       break;
     case MQTT_EVENT_ERROR:
@@ -56,6 +56,15 @@ static void mqtt_event_handler(void *event_handler_arg, esp_event_base_t event_b
   }
 }
 
+static void mqtt_command(esp_mqtt_event_handle_t event){
+  char command[event->data_len+1];
+  snprintf(command, sizeof(command),"%s",event->data);
+
+  if(strcmp(command, "reset")==0){
+    printf("reseting now");
+        esp_restart();
+      }
+}
 
 static void mqtt_publish(void* args)
 {
