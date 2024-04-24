@@ -9,9 +9,9 @@
 
 static char *TAG = "WIFI_CONNECT";
 
-static const uint8_t CONNECTED = BIT0;
-static const uint8_t DISCONNECTED = BIT1;
-EventGroupHandle_t wifi_events;
+// static const uint8_t CONNECTED = BIT0;
+// static const uint8_t DISCONNECTED = BIT1;
+// EventGroupHandle_t wifi_events;
 esp_netif_t *esp_netif;
 
 void event_handler(void *event_handler_arg, esp_event_base_t event_base,
@@ -26,11 +26,11 @@ void event_handler(void *event_handler_arg, esp_event_base_t event_base,
     break;
   case WIFI_EVENT_STA_DISCONNECTED:
     ESP_LOGI(TAG, "WIFI_EVENT_STA_DISCONNECTED");
-    xEventGroupSetBits(wifi_events, DISCONNECTED);
+    // xEventGroupSetBits(wifi_events, DISCONNECTED);
     break;
   case IP_EVENT_STA_GOT_IP:
     ESP_LOGI(TAG, "IP_EVENT_STA_GOT_IP");
-    xEventGroupSetBits(wifi_events, CONNECTED);
+    // xEventGroupSetBits(wifi_events, CONNECTED);
     break;
   default:
     break;
@@ -50,7 +50,7 @@ void connect_init(void) {
 }
 
 esp_err_t connect_sta(char *SSID, char *PASSWORD, int TIMEOUT) {
-  wifi_events = xEventGroupCreate();
+  // wifi_events = xEventGroupCreate();
   esp_netif = esp_netif_create_default_wifi_sta();
   esp_wifi_set_mode(WIFI_MODE_STA);
 
@@ -59,14 +59,17 @@ esp_err_t connect_sta(char *SSID, char *PASSWORD, int TIMEOUT) {
   strncpy((char *)wifi_config.sta.password, PASSWORD,
           sizeof(wifi_config.sta.password) - 1);
   esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-  esp_wifi_start();
-
-  EventBits_t result =
-      xEventGroupWaitBits(wifi_events, CONNECTED | DISCONNECTED, true, false,
-                          pdMS_TO_TICKS(TIMEOUT));
-  if (result) {
-    return ESP_OK;
-  } else {
-    return ESP_FAIL;
-  }
+  return(esp_wifi_start());
+  // EventBits_t result =
+      // xEventGroupWaitBits(wifi_events, CONNECTED | DISCONNECTED, true, false,
+      //                     pdMS_TO_TICKS(TIMEOUT));
+  // if (result) {
+  // } else {
+  //   return ESP_FAIL;
+  // }
 };
+
+esp_err_t wifi_init(){
+  connect_init();
+  return(connect_sta("nepaldigisys", "NDS_0ffice", 10000)!=ESP_OK);
+}

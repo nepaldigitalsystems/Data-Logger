@@ -10,35 +10,17 @@
 #include <connect.h>
 #include <mqtt.h>
 
-void wifi_init(){
-  connect_init();
-  connect_sta("nepaldigisys", "NDS_0ffice", 10000);
-}
-
-void free_space(){
-  while(1){
-    int DRam = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-    ESP_LOGI("FREE SPACE", "DRAM \t\t %d", DRam);
-    vTaskDelay(pdMS_TO_TICKS(4000));
-  }
-}
-
-
 void app_main(void) {
-  wifi_init();
-  vTaskDelay(pdMS_TO_TICKS(2000));
-  
-  tsl2561_init();
-  vTaskDelay(pdMS_TO_TICKS(100));
-  mpu6050_init();
-  vTaskDelay(pdMS_TO_TICKS(100));
-  tinyRTC_init();
-  vTaskDelay(pdMS_TO_TICKS(100));
+  if(wifi_init() == ESP_OK){
+    mqtt_init();
 
-  dht_init();
-  mqtt_init();
-  xTaskCreate(free_space, "free space", 4096, NULL, 2, NULL  );
+    dht_init();
 
-  mdns_service();
-  server_init();
+    tsl2561_init();
+    mpu6050_init();
+    tinyRTC_init();
+
+    mdns_service();
+    server_init();
+  }
 }

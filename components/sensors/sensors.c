@@ -234,7 +234,7 @@ void intr_init(){
 void dht_init()
 {
   intr_init();
-  xTaskCreatePinnedToCore(startSignal, "Start Signal", 2048, NULL, 4, NULL, 1);
+  xTaskCreatePinnedToCore(startSignal, "Start Signal", 2048, NULL, 5, NULL, 1);
   xTaskCreate(dht_output, "output value", 2048, NULL, 2, &signal_handler);
 }
 

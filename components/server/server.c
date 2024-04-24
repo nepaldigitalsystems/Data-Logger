@@ -80,11 +80,9 @@ static void send_data(void *arg)
 static void ws_server_send_messages(httpd_handle_t* server)
 {
   bool send_messages = true;
-
   // Send async message to all connected clients that use websocket protocol every 10 seconds
   while (send_messages) {
-
-    vTaskDelay(pdMS_TO_TICKS(100));
+    vTaskDelay(pdMS_TO_TICKS(5000));
     if (!*server) { // httpd might not have been created by now
       continue;
     }
@@ -110,7 +108,6 @@ static void ws_server_send_messages(httpd_handle_t* server)
       ESP_LOGE(TAG, "httpd_get_client_list failed!");
       return;
     }
-    vTaskDelay(pdMS_TO_TICKS(5000));
   }
 }
 
