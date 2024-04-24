@@ -117,8 +117,8 @@ float temperature;
 TaskHandle_t signal_handler;
 
 // function prototype
-void startSignal();
-int process_signal();
+void DHT_start_signal();
+int DHT_process_signal();
 
 float get_humidity(){ return humidity; }
 float get_temperature(){ return temperature; }
@@ -150,7 +150,7 @@ void error_handler(int response){
   }
 }
 
-void startSignal(){
+void DHT_start_signal(){
   while(1){
     gpio_isr_handler_remove(DHT);
     gpio_isr_handler_remove(DHT_NEG);
@@ -172,7 +172,7 @@ void startSignal(){
   }
 }
 
-int process_signal(){
+int DHT_process_signal(){
   for(int i=0 ; i<41 ; i++){
     int utime = neg_time[i]-pos_time[i] ;
     if(utime>0){
@@ -203,7 +203,7 @@ int process_signal(){
 void dht_output(){
   while(1){
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-    error_handler(process_signal());
+    error_handler(DHT_process_signal());
     pos_count=0;
     neg_count=0;
   }
@@ -234,7 +234,7 @@ void intr_init(){
 void dht_init()
 {
   intr_init();
-  xTaskCreatePinnedToCore(startSignal, "Start Signal", 2048, NULL, 5, NULL, 1);
+  xTaskCreatePinnedToCore(DHT_start_signal, "Start Signal", 2048, NULL, 5, NULL, 1);
   xTaskCreate(dht_output, "output value", 2048, NULL, 2, &signal_handler);
 }
 
