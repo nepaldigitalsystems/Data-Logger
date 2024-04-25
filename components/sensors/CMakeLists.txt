@@ -5,6 +5,7 @@ idf_component_register(SRCS "sensors.c"
   i2c_rw
   server
   client
-  esp_timer)
+  esp_timer
+  ntp)
 
 

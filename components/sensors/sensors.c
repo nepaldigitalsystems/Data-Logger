@@ -1,5 +1,6 @@
+#include "freertos/projdefs.h"
 #include <i2c_rw.h>
-#include <client.h>
+// #include <client.h>
 #include <server.h>
 #include <esp_log.h>
 #include <driver/i2c.h>
@@ -12,6 +13,8 @@
 #include <string.h>
 #include <freertos/semphr.h>
 #include <esp_timer.h>
+
+#include <ntp.h>
 
 
 // -----------------------------[ I2C ]--------------------------------- //
@@ -34,6 +37,7 @@ uint8_t char_to_hex(char pos_10, char pos_1){
   return((0x0f&pos_10)<<4)|(0x0f&pos_1);
 }
 
+
 void time_sync(){
   uint8_t sec=0;
   uint8_t min=0;
@@ -43,27 +47,23 @@ void time_sync(){
   uint8_t month=0;
   uint8_t year=0;
 
-  char time[20]={};
+  char time[100]={};
 
-  while(1){
-    char* rtc_time = rtc_client_setup();
-    if(rtc_time!=0){
-      // time = rtc_client_setup();
-      snprintf(time, sizeof(time),"%s", rtc_time);
-      break;
-    }else{
-      ESP_LOGE("TIME", "INVALID TIME");
-      vTaskDelay(pdMS_TO_TICKS(2000));
-    }
+  while(timeinfo.tm_mday==0){
+    ESP_LOGI("SENSOR"," getting the time for RTC");
+    vTaskDelay(pdMS_TO_TICKS(1000));
   }
+  sprintf(time, "%02d:%02d:%02d %02d:%02d:%02d\n",
+          timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+          timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday);
 
-  hr= char_to_hex(time[11], time[12]);
-  min= char_to_hex(time[14], time[15]);
-  sec= char_to_hex(time[17], time[18]);
+  hr= char_to_hex(time[0],time[1]);
+  min= char_to_hex(time[3],time[4]);
+  sec= char_to_hex(time[6],time[7]);
   // day= char_to_hex(0, time[10]);
-  date= char_to_hex(time[8], time[9]);
-  month= char_to_hex(time[5], time[6]);
-  year= char_to_hex(time[2], time[3]);
+  date= char_to_hex(time[17],time[18]);
+  month= char_to_hex(time[14],time[15]);
+  year= char_to_hex(time[11],time[12]);
 
   uint8_t data[REGISTER_READ_AMOUNT]={};
 
@@ -77,13 +77,16 @@ void time_sync(){
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x05, month);
   i2c_write(RTC_ADDR, MASTER_PORT1, 0x06, year);
 
+  ESP_LOGI("RTC", "Synced time = %s", time);
+
   while(1){
     i2c_read(RTC_ADDR, MASTER_PORT1, 0x00, data);
     for(int i=0; i<7 ; i++){
       time_data[i]= data[i]; 
-      }
-    // printf("\nDATE: %2.2x/%2.2x/%2.2x \n",data[6], data[5], data[4]);
-    // printf("TIME: %2.2x:%2.2x:%2.2x \n",data[2], data[1], data[0]);
+    }
+    // printf("%d:%d:%d \n\n",timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_sec);
+    
+    // printf("sec: %d\n",sec);
     vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
@@ -168,7 +171,7 @@ void DHT_start_signal(){
     gpio_isr_handler_add(DHT_NEG, neg_intr, NULL);
     vTaskDelay(pdMS_TO_TICKS(50));
     xTaskNotifyGive(signal_handler);
-    vTaskDelay(pdMS_TO_TICKS(4000));
+    vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
 
@@ -234,8 +237,8 @@ void intr_init(){
 void dht_init()
 {
   intr_init();
-  xTaskCreatePinnedToCore(DHT_start_signal, "Start Signal", 2048, NULL, 5, NULL, 1);
-  xTaskCreate(dht_output, "output value", 2048, NULL, 2, &signal_handler);
+  xTaskCreatePinnedToCore(DHT_start_signal, "Start Signal", 2048, NULL, 6, NULL, 1);
+  xTaskCreate(dht_output, "output value", 2048, NULL, 3, &signal_handler);
 }
 
 // -----------------------------[ MPU6050 ]--------------------------------- //
@@ -349,7 +352,7 @@ void tsl2561_conf(){
     // printf("%8d", ch0);
     // printf("%8d", ch1);
 
-    if(digital_to_lux >= 0){
+    if(digital_to_lux > 0){
       // printf("\nlux: %6.2f\n\n", digital_to_lux(ch0, ch1));
       lux=digital_to_lux(ch0, ch1);
     }else{
