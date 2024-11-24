@@ -41,7 +41,7 @@ static void initialize_sntp(void){
 // void set_time(){
 void ntp_init(void){
   int retry = 0;
-  const int retry_count = 10;
+  const int retry_count = 4;
 
   initialize_sntp();
   while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry < retry_count) {
@@ -51,15 +51,6 @@ void ntp_init(void){
     vTaskDelay(2000 / portTICK_PERIOD_MS);
   }
   if(retry>=retry_count) esp_restart();
-
-  // while(1) {
     Get_current_date_time(Current_Date_Time);
-    // printf("current date and time is = %s\n",Current_Date_Time);
-    // vTaskDelay(1000 / portTICK_PERIOD_MS);
-  // }
 }
-
-// void ntp_init(void){
-//   xTaskCreate(set_time, "ntp sync", 2048, NULL, 2, NULL);
-// }
 

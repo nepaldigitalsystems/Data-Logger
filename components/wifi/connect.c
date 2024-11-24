@@ -9,9 +9,6 @@
 
 static char *TAG = "WIFI_CONNECT";
 
-// static const uint8_t CONNECTED = BIT0;
-// static const uint8_t DISCONNECTED = BIT1;
-// EventGroupHandle_t wifi_events;
 esp_netif_t *esp_netif;
 
 void event_handler(void *event_handler_arg, esp_event_base_t event_base,
@@ -49,27 +46,21 @@ void connect_init(void) {
   esp_wifi_set_storage(WIFI_STORAGE_RAM);
 }
 
-esp_err_t connect_sta(char *SSID, char *PASSWORD, int TIMEOUT) {
+esp_err_t connect_sta() {
   // wifi_events = xEventGroupCreate();
   esp_netif = esp_netif_create_default_wifi_sta();
   esp_wifi_set_mode(WIFI_MODE_STA);
 
   wifi_config_t wifi_config = {};
-  strncpy((char *)wifi_config.sta.ssid, SSID, sizeof(wifi_config.sta.ssid) - 1);
-  strncpy((char *)wifi_config.sta.password, PASSWORD,
+  strncpy((char *)wifi_config.sta.ssid, "podamibe",
+          sizeof(wifi_config.sta.ssid) - 1);
+  strncpy((char *)wifi_config.sta.password, "Chobhar570)))",
           sizeof(wifi_config.sta.password) - 1);
   esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-  return(esp_wifi_start());
-  // EventBits_t result =
-      // xEventGroupWaitBits(wifi_events, CONNECTED | DISCONNECTED, true, false,
-      //                     pdMS_TO_TICKS(TIMEOUT));
-  // if (result) {
-  // } else {
-  //   return ESP_FAIL;
-  // }
-};
+  return (esp_wifi_start());
+}
 
-esp_err_t wifi_init(){
+esp_err_t wifi_init() {
   connect_init();
-  return(connect_sta("nepaldigisys", "NDS_0ffice", 10000)!=ESP_OK);
+  return (connect_sta() != ESP_OK);
 }

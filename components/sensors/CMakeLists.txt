@@ -6,6 +6,7 @@ idf_component_register(SRCS "sensors.c"
   server
   client
   esp_timer
-  ntp)
+  ntp
+  )
 
 

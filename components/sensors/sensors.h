@@ -1,5 +1,6 @@
 #ifndef  SENSORS_H
 #define  SENSORS_H
+#include <freertos/FreeRTOS.h>
 
 void tinyRTC_init();
 void dht_init();
