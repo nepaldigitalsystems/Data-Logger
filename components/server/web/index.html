@@ -13,12 +13,12 @@
     }
     h1 {
     font-size: 1.8rem;
-    color: #808080;
+    color: #999999;
     }
     .topnav {
     overflow: hidden;
     background-color: #000000;
-    border-bottom: 1px solid #777777;
+    border-bottom: 1px solid #494949;
     }
     body {
     margin: 0;
@@ -36,16 +36,17 @@
     .card {
     background-color: #000000;
     /* box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5); */
-    border: 1px solid #777777;
+    border: 1px solid #494949;
+    border-radius: 5px;
     }
     .card-title {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #888888
+    color: #999999
     }
     .reading {
     font-size: 1.8rem;
-    color: #b0b0b0;
+    color: #dddddd;
     }
     </style>
   </head>
@@ -90,7 +91,7 @@
       </div>
     </div>
     <script>
-    const socket = new WebSocket('ws://192.168.1.96/ws'); // Change to your WebSocket server address
+    const socket = new WebSocket('ws://192.168.1.79/ws'); // Change to your WebSocket server address
 
     socket.onopen = () => {
       console.log('WebSocket connection established.');

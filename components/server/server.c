@@ -89,7 +89,7 @@ static void ws_server_send_messages(httpd_handle_t *server) {
         if (!*server) { // httpd might not have been created by now
             continue;
         }
-        int max_clients = 100;
+        int max_clients = 10;
         size_t clients = max_clients;
         int client_fds[max_clients];
         if (httpd_get_client_list(*server, &clients, client_fds) == ESP_OK) {
@@ -116,11 +116,9 @@ static void ws_server_send_messages(httpd_handle_t *server) {
 }
 
 void mdns_service() {
-    esp_err_t esp = mdns_init();
-    if (esp) {
-        ESP_LOGE("MDNS", "something went wrong");
-        return;
-    }
-    mdns_hostname_set("void-esp32");
-    mdns_instance_name_set("just for learning purpose");
+    char* hostname = "void-esp32";
+    ESP_ERROR_CHECK(mdns_init());
+    ESP_ERROR_CHECK(mdns_hostname_set(hostname));
+    ESP_ERROR_CHECK(mdns_instance_name_set("just for learning purpose"));
+    ESP_LOGW("MDNS", "hostname: %s", hostname);
 }

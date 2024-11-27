@@ -84,5 +84,5 @@ void mqtt_init() {
                                  client);
   esp_mqtt_client_start(client);
 
-  // xTaskCreate(mqtt_publish, "publish",2048,(void*)client, 2, NULL);
+   xTaskCreate(mqtt_publish, "publish",2048,(void*)client, 2, NULL);
 }

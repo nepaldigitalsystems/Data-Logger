@@ -52,9 +52,9 @@ esp_err_t connect_sta() {
   esp_wifi_set_mode(WIFI_MODE_STA);
 
   wifi_config_t wifi_config = {};
-  strncpy((char *)wifi_config.sta.ssid, "podamibe",
+  strncpy((char *)wifi_config.sta.ssid, "NTFiber-8F3C-2.4G",
           sizeof(wifi_config.sta.ssid) - 1);
-  strncpy((char *)wifi_config.sta.password, "Chobhar570)))",
+  strncpy((char *)wifi_config.sta.password, "dwxsnbm6",
           sizeof(wifi_config.sta.password) - 1);
   esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
   return (esp_wifi_start());
@@ -64,3 +64,4 @@ esp_err_t wifi_init() {
   connect_init();
   return (connect_sta() != ESP_OK);
 }
+

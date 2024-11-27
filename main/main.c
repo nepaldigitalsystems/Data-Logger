@@ -11,17 +11,17 @@
 #include <server.h>
 
 void app_main(void) {
-  wifi_init();
-  /* vTaskDelay(pdMS_TO_TICKS(1000)); */
-  //
-  // tsl2561_init();
-  // mpu6050_init();
-   /*dht_init();*/
-  //
-  // ntp_init();
-  // tinyRTC_init();
+    wifi_init();
+     vTaskDelay(pdMS_TO_TICKS(1000)); 
+    //
+    // tsl2561_init();
+    // mpu6050_init();
+    dht_init();
+    //
+    // ntp_init();
+    // tinyRTC_init();
 
-   /*mqtt_init();*/
-   /*mdns_service(); */
-     /*server_init();*/
+    mqtt_init();
+    mdns_service(); 
+    server_init();
 }

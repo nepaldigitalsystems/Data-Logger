@@ -6,4 +6,5 @@ idf_component_register(SRCS "server.c"
                     esp_http_server
                     mdns
                     json
-                    sensors)
+                    sensors
+                )
